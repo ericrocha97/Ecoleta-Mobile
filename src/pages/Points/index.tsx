@@ -127,10 +127,13 @@ const Points = () => {
                   longitude: point.longitude
                 }}
                 >
+                  
                   <View style={styles.mapMarkerContainer}>
                     <Image style={styles.mapMarkerImage} source={{uri: point.image}} />
                     <Text style={styles.mapMarkerTitle}>{point.name}</Text>
+                    
                   </View>
+                  <View style={styles.triangle}></View>
                 </Marker>
               ))}
             </MapView>
@@ -209,7 +212,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderRadius: 8,
     overflow: 'hidden',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   mapMarkerImage: {
@@ -258,6 +261,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_400Regular',
     textAlign: 'center',
     fontSize: 13,
+  },
+  triangle: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 5,//px solid transparent; 
+    borderLeftColor: 'transparent',
+    borderRightWidth: 5,//px solid transparent; 
+    borderRightColor: 'transparent',
+    borderTopWidth: 10,//px solid #6BB9F0; 
+    borderTopColor: '#34CB79',
+    alignSelf: 'center',
   },
 });
 
