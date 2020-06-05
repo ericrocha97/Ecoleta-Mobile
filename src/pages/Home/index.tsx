@@ -1,20 +1,70 @@
-import React, { useState } from "react";
-import { Feather as Icon } from '@expo/vector-icons'
-import { StyleSheet, ImageBackground, View, Image, Text, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler'
-import { useNavigation } from '@react-navigation/native'
+import React, { useState, useEffect } from "react";
+import { Feather as Icon } from '@expo/vector-icons';
+import { StyleSheet, ImageBackground, View, Image, Text, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import RNPickerSelect from 'react-native-picker-select';
+
+
+interface UF {
+  id: number;
+  nome: string;
+  sigla: string;
+}
+
+interface City {
+  id: number;
+  nome: string;
+  sigla: string;
+}
 
 const Home = () => {
-  const [uf, setUf] = useState("");
-  const [city, setCity] = useState("");
+  const [selectedUf, setSelectedUf] = useState('0');
+  const [selectedCity, setSelectedCity] = useState('0');
+  const [uf, setUF] = useState<UF[]>([]);
+  const [city, setCity] = useState<City[]>([]);
   const navigation = useNavigation();
 
+  useEffect(() => {
+    axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
+      .then(response => {
+        setUF(response.data);
+      })
+      console.log(uf)
+  }, []);
+
+  useEffect(() => {
+    if(selectedUf === '0') {
+      return;
+    }
+    axios
+      .get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios?orderBy=nome`)
+      .then(response => {
+        setCity(response.data);
+      })
+  }, [selectedUf]);
+
   function handleNavigateToPoints() {
+    if(selectedUf === '0' || selectedCity === '0'){
+      Alert.alert('Oooops...','Precisamos que escolha seu estado e cidade!');
+      return;
+    }
+    console.log(selectedUf)
+    console.log(selectedCity)
     navigation.navigate("Points", {
-      uf,
-      city,
+      selectedUf,
+      selectedCity,
     });
-  }
+    
+  };
+  function handleSelectedUf(uf: string){
+    setSelectedUf(uf);
+  };
+
+  function handleSelectedCity(city: string){
+    setSelectedCity(city);
+  };
 
   return (
     <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding': undefined}>
@@ -31,22 +81,28 @@ const Home = () => {
           </View>
         </View>
         <View style={styles.footer}>
-          <TextInput
-              style={styles.input}
-              value={uf}
-              onChangeText={setUf}
-              maxLength={2}
-              autoCapitalize="characters"
-              autoCorrect={false}
-              placeholder="Digite a UF"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Digite a cidade"
-              value={city}
-              autoCorrect={false}
-              onChangeText={setCity}
-            />
+        <RNPickerSelect
+            placeholder={{
+              label: 'Selecione uma UF',
+              value: '0',
+            }}
+            style={{viewContainer: styles.input}}
+            onValueChange={item => handleSelectedUf(item)}
+            items={uf.map(item => {
+              return ({label: `${item.sigla} - ${item.nome}`, value: item.sigla})
+            })}
+          />
+          <RNPickerSelect
+            placeholder={{
+              label: 'Selecione uma cidade',
+              value: '0',
+            }}
+            style={{viewContainer: styles.input}}
+            onValueChange={item => handleSelectedCity(item)}
+            items={city ? city.map(item => {
+              return ({label: `${item.nome}`, value: item.nome})
+            }): []}
+          />
             <RectButton style={styles.button} onPress={handleNavigateToPoints}>
               <View style={styles.buttonIcon}>
                 <Text>
@@ -102,6 +158,8 @@ const styles = StyleSheet.create({
       marginBottom: 8,
       paddingHorizontal: 24,
       fontSize: 16,
+      justifyContent: 'center',
+
     },
   
     button: {
