@@ -2,6 +2,8 @@
   "expo": {
     "name": "Ecoleta",
     "slug": "ecoleta",
+    "privacy": "public",
+    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android",
@@ -15,6 +17,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#F0F0F5"
     },
+    "primaryColor":"#34cb79",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -22,7 +25,18 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    }
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.ericrocha.ecoleta",
+      "buildNumber": "1.0.0"
+    },
+    "android":{
+      "package": "dev.ericrocha.ecoleta",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#34cb79"
+      }
+    },
+    "description": "",
+    "githubUrl": "https://github.com/ericrocha97/Ecoleta-Mobile"
   }
 }
